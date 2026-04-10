@@ -11,7 +11,7 @@
     "build:android": "npm run cap:sync && cd android && ./gradlew assembleDebug"
   },
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "@capacitor/android": "^8.3.0",
     "@capacitor/cli": "^7.6.1",

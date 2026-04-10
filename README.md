@@ -1,6 +1,6 @@
 # SENTINEL RF-7200 - Portable Spectrum Analyzer
 
-![License](https://img.shields.io/badge/license-ISC-blue)
+![License](https://img.shields.io/badge/license-MIT-blue)
 ![Platform](https://img.shields.io/badge/platform-web%20%7C%20android-green)
 ![Build](https://img.shields.io/badge/build-Capacitor-orange)
 
@@ -96,4 +96,4 @@ android/             Capacitor Android project
 
 ## License
 
-ISC
+MIT
