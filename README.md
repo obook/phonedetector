@@ -7,9 +7,10 @@
 ![JavaScript](https://img.shields.io/badge/javascript-ES%20modules-F7DF1E?logo=javascript&logoColor=black)
 ![HTML5](https://img.shields.io/badge/HTML5-Canvas%20%2B%20Web%20Audio-E34F26?logo=html5&logoColor=white)
 ![Offline](https://img.shields.io/badge/network-fully%20offline-9cf)
-![No Framework](https://img.shields.io/badge/framework-none-lightgrey)
 
 A fake but convincing RF signal detector web app designed as a classroom prank. It simulates a professional-grade TSCM (Technical Surveillance Counter-Measures) device that pretends to detect phones, smartwatches, wireless earbuds, and other connected devices nearby.
+
+![Demo screenshot showing radar sweep, signal bars, and event log](/media/demo-screenshot.png)
 
 Built to look and sound like real equipment - Geiger counter clicks, radar sweep, signal bars, scrolling event log - so students genuinely believe their devices are being scanned and rush to turn them off.
 

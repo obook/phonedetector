@@ -44,8 +44,8 @@ public class MainActivity extends BridgeActivity {
     }
 
     @Override
-    protected void onUserLeaveHint() {
-        super.onUserLeaveHint();
+    public void onStop() {
+        super.onStop();
         finishAndRemoveTask();
     }
 
