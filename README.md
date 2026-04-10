@@ -1,8 +1,13 @@
 # SENTINEL RF-7200 - Portable Spectrum Analyzer
 
 ![License](https://img.shields.io/badge/license-MIT-blue)
+![Version](https://img.shields.io/badge/version-1.0.0-brightgreen)
 ![Platform](https://img.shields.io/badge/platform-web%20%7C%20android-green)
-![Build](https://img.shields.io/badge/build-Capacitor-orange)
+![Build](https://img.shields.io/badge/build-Capacitor%208-orange)
+![JavaScript](https://img.shields.io/badge/javascript-ES%20modules-F7DF1E?logo=javascript&logoColor=black)
+![HTML5](https://img.shields.io/badge/HTML5-Canvas%20%2B%20Web%20Audio-E34F26?logo=html5&logoColor=white)
+![Offline](https://img.shields.io/badge/network-fully%20offline-9cf)
+![No Framework](https://img.shields.io/badge/framework-none-lightgrey)
 
 A fake but convincing RF signal detector web app designed as a classroom prank. It simulates a professional-grade TSCM (Technical Surveillance Counter-Measures) device that pretends to detect phones, smartwatches, wireless earbuds, and other connected devices nearby.
 
@@ -16,18 +21,16 @@ Built to look and sound like real equipment - Geiger counter clicks, radar sweep
 2. The boot sequence plays automatically, looking like real firmware initialization.
 3. Tap anywhere on the boot screen to enter fullscreen, then tap "START SCAN."
 4. In idle mode, the radar sweeps quietly with occasional background clicks.
-5. **Triple-tap the title** "SENTINEL RF-7200" to start ramping up detection.
+5. **Tap anywhere on the screen** to toggle detection (with haptic vibration).
 6. Signal bars rise, Geiger clicks accelerate, alert messages flood the log.
-7. Triple-tap again to ramp back down.
+7. Tap again to ramp back down.
 8. Watch students scramble to turn off their phones.
 
 ## Secret controls
 
 | Action | Effect |
 |---|---|
-| Triple-tap the title | Toggle detection on/off |
-| Volume Up key (Android) | Start detection ramp-up |
-| Volume Down key (Android) | Start ramp-down |
+| Tap anywhere on screen | Toggle detection on/off (vibration feedback) |
 | Long press bottom-right corner (1.5 s) | Open hidden calibration panel (speed, volume, reset) |
 | Tap the logo icon (diamond shape) | Toggle fullscreen |
 | Tap the speaker icon | Toggle sound on/off |

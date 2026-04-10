@@ -5,8 +5,7 @@
  * Manages the detection intensity (0.0 to 1.0) through a four-state
  * machine: IDLE -> RAMPING_UP -> DETECTING -> RAMPING_DOWN -> IDLE.
  * The teacher triggers state changes via hidden gestures:
- *   - Triple-tap on the header title
- *   - Volume hardware keys (Android)
+ *   - Tap anywhere on screen: toggle detection on/off (with vibration)
  *   - Long press on the bottom-right corner (opens calibration panel)
  *
  * Author: O. Booklage
@@ -90,46 +89,34 @@ function update(dt) {
 }
 
 /* ===============================================================
- *  TRIPLE-TAP ON TITLE
+ *  VIBRATE HELPER
  * =============================================================== */
 
-function initTripleTap(element) {
-  let taps = 0;
-  let timer = null;
-
-  element.addEventListener('click', (e) => {
-    e.preventDefault();
-    taps++;
-    if (taps === 1) {
-      timer = setTimeout(() => { taps = 0; }, 800);
-    }
-    if (taps >= 3) {
-      clearTimeout(timer);
-      taps = 0;
-      trigger();
-    }
-  });
+function vibrate() {
+  if (navigator.vibrate) {
+    navigator.vibrate(100);
+  }
 }
 
 /* ===============================================================
- *  VOLUME HARDWARE KEYS (ANDROID)
+ *  TAP TO TOGGLE DETECTION
  * =============================================================== */
 
-function initVolumeButtons() {
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'AudioVolumeUp' || e.keyCode === 24) {
-      e.preventDefault();
-      if (state === State.IDLE || state === State.RAMPING_DOWN) {
-        state = State.RAMPING_UP;
-      }
-    } else if (e.key === 'AudioVolumeDown' || e.keyCode === 25) {
-      e.preventDefault();
-      if (state === State.RAMPING_UP || state === State.DETECTING) {
-        state = State.RAMPING_DOWN;
-      }
+function initScreenTap() {
+  document.addEventListener('click', (e) => {
+    /* Ignore taps on interactive UI elements. */
+    if (e.target.closest('#secret-panel') ||
+        e.target.closest('#secret-zone') ||
+        e.target.closest('#sound-toggle') ||
+        e.target.closest('#init-overlay')) {
+      return;
     }
+
+    vibrate();
+    trigger();
   });
 }
+
 
 /* ===============================================================
  *  LONG PRESS - HIDDEN CALIBRATION PANEL
@@ -200,12 +187,7 @@ function initSecretZone() {
 function init(callbacks = {}) {
   onVolumeChange = callbacks.onVolumeChange || null;
 
-  const title = document.getElementById('app-title');
-  if (title) {
-    initTripleTap(title);
-  }
-
-  initVolumeButtons();
+  initScreenTap();
   initSecretZone();
 }
 

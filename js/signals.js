@@ -152,8 +152,10 @@ function updateFrequency(intensity, timestamp) {
   const freq = pickRandom(band.freqs);
   const parts = freq.split(' ');
   const num = parseFloat(parts[0]);
-  const jitter = (Math.random() - 0.5) * 0.006;
-  freqEl.textContent = (num + jitter).toFixed(3) + ' ' + parts[1];
+  const isMHz = parts[1] === 'MHz';
+  const jitter = (Math.random() - 0.5) * (isMHz ? 0.6 : 0.006);
+  const decimals = isMHz ? 1 : 3;
+  freqEl.textContent = (num + jitter).toFixed(decimals) + ' ' + parts[1];
 
   const peakDbm = Math.round(
     band.baseDbm + intensity * (band.baseDbm * -0.9) + (Math.random() - 0.5) * 4
