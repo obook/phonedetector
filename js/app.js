@@ -168,5 +168,14 @@ async function requestWakeLock() {
   }
 }
 
+/* Suspend audio when the app goes to the background (swipe, home, task switch). */
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) {
+    audio.suspend();
+  } else if (running) {
+    audio.resume();
+  }
+});
+
 initOverlay();
 requestWakeLock();

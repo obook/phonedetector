@@ -52,6 +52,12 @@ function resume() {
   }
 }
 
+function suspend() {
+  if (ctx && ctx.state === 'running') {
+    ctx.suspend();
+  }
+}
+
 function setVolume(v) {
   if (masterGain) {
     masterGain.gain.setTargetAtTime(v, ctx.currentTime, 0.05);
@@ -178,4 +184,4 @@ function update(intensity, timestamp) {
   }
 }
 
-export default { init, resume, setVolume, update };
+export default { init, resume, suspend, setVolume, update };
