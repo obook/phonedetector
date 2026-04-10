@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">phonedetector</string>
+    <string name="title_activity_main">phonedetector</string>
+    <string name="package_name">com.teacher.rfdetector</string>
+    <string name="custom_url_scheme">com.teacher.rfdetector</string>
+</resources>

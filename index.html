@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#0a0e1a">
+    <title>SENTINEL RF-7200</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Boot sequence overlay -->
+    <div id="init-overlay">
+        <div class="boot-screen">
+            <div class="boot-header">
+                <div class="boot-logo">
+                    <svg class="boot-icon" viewBox="0 0 48 48" fill="none">
+                        <path d="M24 4L4 14v20l20 10 20-10V14L24 4z" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                        <path d="M24 4v40M4 14l20 10 20-10" stroke="currentColor" stroke-width="1" opacity="0.4"/>
+                        <circle cx="24" cy="24" r="6" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                        <circle cx="24" cy="24" r="2" fill="currentColor"/>
+                    </svg>
+                    <div class="boot-brand">
+                        <span class="boot-company">SENTINEL DEFENSE SYSTEMS</span>
+                        <span class="boot-model">RF-7200 Portable Spectrum Analyzer</span>
+                    </div>
+                </div>
+            </div>
+            <div class="boot-terminal" id="boot-terminal">
+                <div class="boot-line">[BIOS] Sentinel RF-7200 rev.3 -firmware v3.2.1-b2024</div>
+                <div class="boot-line">[POST] CPU............ OK</div>
+                <div class="boot-line">[POST] DSP engine..... OK</div>
+                <div class="boot-line">[POST] RF front-end... OK</div>
+                <div class="boot-line">[POST] ADC 14-bit..... OK</div>
+                <div class="boot-line">[POST] Memory 512MB... OK</div>
+                <div class="boot-line">[CAL]  Last calibration: 2024-09-12 -VALID</div>
+                <div class="boot-line">[INIT] Loading band profiles... 47 bands loaded</div>
+                <div class="boot-line">[INIT] Antenna: OMNIDIRECTIONAL -gain 2.1 dBi</div>
+                <div class="boot-line highlight">[SYS]  System ready -awaiting operator input</div>
+            </div>
+            <div class="boot-footer">
+                <button class="boot-start" id="boot-start-btn">
+                    <span class="boot-start-icon">&#9654;</span>
+                    START SCAN
+                </button>
+                <div class="boot-meta">
+                    <span>S/N: SDS-7200-2024-00847</span>
+                    <span>License: GOV-FR-2024-1192</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Application principale -->
+    <div id="app" class="hidden">
+        <!-- Noise texture overlay -->
+        <div class="noise-overlay"></div>
+
+        <!-- Top bar -->
+        <header id="header">
+            <div class="header-row-1">
+                <div class="header-brand">
+                    <svg class="header-icon" viewBox="0 0 48 48" fill="none">
+                        <path d="M24 4L4 14v20l20 10 20-10V14L24 4z" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                        <circle cx="24" cy="24" r="6" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                        <circle cx="24" cy="24" r="2" fill="currentColor"/>
+                    </svg>
+                    <span id="app-title" class="header-title">SENTINEL RF-7200</span>
+                </div>
+                <div class="header-status">
+                    <button class="sound-toggle" id="sound-toggle" title="Toggle audio">
+                        <svg class="sound-icon" id="sound-icon-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M11 5L6 9H2v6h4l5 4V5z"/>
+                            <path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/>
+                        </svg>
+                        <svg class="sound-icon hidden" id="sound-icon-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M11 5L6 9H2v6h4l5 4V5z"/>
+                            <line x1="23" y1="9" x2="17" y2="15"/>
+                            <line x1="17" y1="9" x2="23" y2="15"/>
+                        </svg>
+                    </button>
+                    <span class="status-led" id="status-led"></span>
+                    <span class="status-text" id="status-text">OPERATIONAL</span>
+                </div>
+            </div>
+            <div class="header-row-2">
+                <div class="header-param"><span class="param-key">SENS</span><span class="param-val">-120 dBm</span></div>
+                <div class="header-param"><span class="param-key">MODE</span><span class="param-val">SWEEP</span></div>
+                <div class="header-param"><span class="param-key">SPAN</span><span class="param-val">0.4–6.0 GHz</span></div>
+                <div class="header-param"><span class="param-key">RBW</span><span class="param-val">AUTO</span></div>
+            </div>
+        </header>
+
+        <!-- Radar -->
+        <section id="radar-section">
+            <div class="panel-label">RF ENVIRONMENT -SPATIAL ANALYSIS</div>
+            <canvas id="radar-canvas"></canvas>
+            <div class="radar-overlay">
+                <div class="radar-range">RANGE: 15m</div>
+                <div id="radar-status" class="radar-status">SCANNING</div>
+            </div>
+        </section>
+
+        <!-- Signal bars -->
+        <section id="signal-bars">
+            <div class="panel-label">BAND POWER LEVELS</div>
+            <div class="bars-grid">
+                <div class="signal-row" data-band="gsm">
+                    <div class="band-info">
+                        <span class="band-label">CELLULAR</span>
+                        <span class="band-detail">GSM / LTE / 5G NR</span>
+                    </div>
+                    <div class="bar-track">
+                        <div class="bar-fill" id="bar-gsm"></div>
+                        <div class="bar-markers"><span></span><span></span><span></span><span></span></div>
+                    </div>
+                    <span class="dbm-value" id="dbm-gsm">-98 dBm</span>
+                </div>
+                <div class="signal-row" data-band="wifi24">
+                    <div class="band-info">
+                        <span class="band-label">Wi-Fi 2.4</span>
+                        <span class="band-detail">802.11 b/g/n/ax</span>
+                    </div>
+                    <div class="bar-track">
+                        <div class="bar-fill" id="bar-wifi24"></div>
+                        <div class="bar-markers"><span></span><span></span><span></span><span></span></div>
+                    </div>
+                    <span class="dbm-value" id="dbm-wifi24">-95 dBm</span>
+                </div>
+                <div class="signal-row" data-band="wifi5">
+                    <div class="band-info">
+                        <span class="band-label">Wi-Fi 5/6</span>
+                        <span class="band-detail">802.11 ac/ax</span>
+                    </div>
+                    <div class="bar-track">
+                        <div class="bar-fill" id="bar-wifi5"></div>
+                        <div class="bar-markers"><span></span><span></span><span></span><span></span></div>
+                    </div>
+                    <span class="dbm-value" id="dbm-wifi5">-97 dBm</span>
+                </div>
+                <div class="signal-row" data-band="bt">
+                    <div class="band-info">
+                        <span class="band-label">BLUETOOTH</span>
+                        <span class="band-detail">Classic / LE 5.x</span>
+                    </div>
+                    <div class="bar-track">
+                        <div class="bar-fill" id="bar-bt"></div>
+                        <div class="bar-markers"><span></span><span></span><span></span><span></span></div>
+                    </div>
+                    <span class="dbm-value" id="dbm-bt">-96 dBm</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Frequency + device readout -->
+        <section id="freq-display">
+            <div class="readout-group">
+                <span class="readout-label">FREQ LOCK</span>
+                <span id="freq-value" class="readout-value">---</span>
+            </div>
+            <div class="readout-divider"></div>
+            <div class="readout-group">
+                <span class="readout-label">PEAK PWR</span>
+                <span id="peak-power" class="readout-value">--- dBm</span>
+            </div>
+            <div class="readout-divider"></div>
+            <div class="readout-group">
+                <span class="readout-label">SOURCES</span>
+                <span id="device-count" class="readout-value readout-count">0</span>
+            </div>
+        </section>
+
+        <!-- Detection log -->
+        <section id="log-section">
+            <div class="panel-label">EVENT LOG</div>
+            <div id="log-output"></div>
+        </section>
+
+        <!-- Status bar -->
+        <footer id="footer">
+            <span id="footer-time"></span>
+            <span>SENTINEL RF-7200</span>
+            <span>S/N: 00847</span>
+        </footer>
+
+        <!-- Secret trigger zone -->
+        <div id="secret-zone"></div>
+
+        <!-- Hidden calibration panel -->
+        <div id="secret-panel" class="hidden">
+            <div class="panel-content">
+                <div class="panel-title">FIELD CALIBRATION</div>
+                <div class="panel-serial">Service mode -S/N: SDS-7200-2024-00847</div>
+                <label>
+                    <span>Detection ramp (s)</span>
+                    <input type="range" id="ramp-speed" min="1" max="10" value="5">
+                </label>
+                <label>
+                    <span>Audio output level</span>
+                    <input type="range" id="volume-ctrl" min="0" max="100" value="70">
+                </label>
+                <div class="panel-buttons">
+                    <button id="btn-reset">RESET SCAN</button>
+                    <button id="btn-close-panel">CLOSE</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="js/app.js"></script>
+</body>
+</html>

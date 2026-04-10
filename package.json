@@ -1,0 +1,20 @@
+{
+  "name": "phonedetector",
+  "version": "1.0.0",
+  "description": "RF Signal Detector - Electromagnetic Spectrum Analyzer",
+  "main": "index.html",
+  "scripts": {
+    "serve": "npx serve .",
+    "sync-www": "rm -rf www && mkdir -p www && cp index.html www/ && cp -r css www/ && cp -r js www/ && cp -r fonts www/ && cp -r assets www/",
+    "cap:sync": "npm run sync-www && npx cap sync",
+    "cap:open": "npx cap open android",
+    "build:android": "npm run cap:sync && cd android && ./gradlew assembleDebug"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@capacitor/android": "^8.3.0",
+    "@capacitor/cli": "^7.6.1",
+    "@capacitor/core": "^8.3.0"
+  }
+}
