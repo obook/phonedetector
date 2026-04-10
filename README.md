@@ -96,4 +96,12 @@ android/             Capacitor Android project
 
 ## License
 
-MIT
+This project is licensed under the [MIT License](LICENSE).
+
+### Third-party licenses
+
+| Component | License | Author |
+|---|---|---|
+| [IBM Plex Mono](https://github.com/IBM/plex) | [SIL Open Font License 1.1](https://scripts.sil.org/OFL) | IBM Corp. |
+| [Oxanium](https://github.com/sevmeyer/oxanium) | [SIL Open Font License 1.1](https://scripts.sil.org/OFL) | Severin Meyer |
+| [Capacitor](https://capacitorjs.com/) | MIT | Ionic Team |
