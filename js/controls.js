@@ -13,6 +13,41 @@
  * Licence: ISC
  */
 
+/* ===============================================================
+ *  CONSTANTS
+ * =============================================================== */
+
+/** Reference ramp speed; the slider value is normalized against this. */
+const DEFAULT_RAMP_SPEED = 5;
+
+/** Default master volume on first start (0.0 to 1.0). */
+const DEFAULT_VOLUME = 0.7;
+
+/** Intensity gain per second while ramping up. */
+const RAMP_UP_RATE = 0.25;
+
+/** Intensity loss per second while ramping down. */
+const RAMP_DOWN_RATE = 0.35;
+
+/** Minimum intensity floor while in DETECTING state. */
+const DETECTING_BASE = 0.92;
+
+/** Random fluctuation amplitude added on top of DETECTING_BASE. */
+const DETECTING_VARIANCE = 0.08;
+
+/** Maximum random intensity used as background noise in IDLE. */
+const IDLE_NOISE_LEVEL = 0.05;
+
+/** Vibration duration triggered on every secret tap, in milliseconds. */
+const VIBRATE_MS = 100;
+
+/** Press duration that opens the calibration panel, in milliseconds. */
+const LONG_PRESS_MS = 1500;
+
+/* ===============================================================
+ *  STATE
+ * =============================================================== */
+
 const State = {
   IDLE: 'IDLE',
   RAMPING_UP: 'RAMPING_UP',
@@ -22,8 +57,8 @@ const State = {
 
 let state = State.IDLE;
 let intensity = 0;
-let rampSpeed = 5;
-let volume = 0.7;
+let rampSpeed = DEFAULT_RAMP_SPEED;
+let volume = DEFAULT_VOLUME;
 
 let onVolumeChange = null;
 
@@ -31,19 +66,25 @@ let onVolumeChange = null;
  *  STATE MACHINE
  * =============================================================== */
 
+/** @returns {number} Current detection intensity from 0.0 to 1.0. */
 function getIntensity() {
   return intensity;
 }
 
+/** @returns {string} Current state name (one of State.*). */
 function getState() {
   return state;
 }
 
+/** @returns {number} Current master volume from 0.0 to 1.0. */
 function getVolume() {
   return volume;
 }
 
-/* Toggle between ramping up and ramping down. */
+/**
+ * Toggle between ramping up and ramping down.
+ * Called by the secret tap handler.
+ */
 function trigger() {
   if (state === State.IDLE || state === State.RAMPING_DOWN) {
     state = State.RAMPING_UP;
@@ -52,30 +93,31 @@ function trigger() {
   }
 }
 
+/** Force the state machine back to IDLE with zero intensity. */
 function reset() {
   state = State.IDLE;
   intensity = 0;
 }
 
-/*
+/**
  * Advance the state machine by one frame.
- * @param {number} dt - Delta time in seconds since last frame.
+ * @param {number} dt - Delta time in seconds since the previous frame.
  */
 function update(dt) {
-  const speed = rampSpeed / 5;
+  const speed = rampSpeed / DEFAULT_RAMP_SPEED;
   switch (state) {
     case State.RAMPING_UP:
-      intensity = Math.min(1, intensity + dt * 0.25 * speed);
+      intensity = Math.min(1, intensity + dt * RAMP_UP_RATE * speed);
       if (intensity >= 1) {
         state = State.DETECTING;
       }
       break;
     case State.DETECTING:
       /* Small fluctuations around maximum. */
-      intensity = 0.92 + Math.random() * 0.08;
+      intensity = DETECTING_BASE + Math.random() * DETECTING_VARIANCE;
       break;
     case State.RAMPING_DOWN:
-      intensity = Math.max(0, intensity - dt * 0.35 * speed);
+      intensity = Math.max(0, intensity - dt * RAMP_DOWN_RATE * speed);
       if (intensity <= 0) {
         intensity = 0;
         state = State.IDLE;
@@ -83,7 +125,7 @@ function update(dt) {
       break;
     case State.IDLE:
       /* Very faint background noise. */
-      intensity = Math.random() * 0.05;
+      intensity = Math.random() * IDLE_NOISE_LEVEL;
       break;
   }
 }
@@ -94,7 +136,7 @@ function update(dt) {
 
 function vibrate() {
   if (navigator.vibrate) {
-    navigator.vibrate(100);
+    navigator.vibrate(VIBRATE_MS);
   }
 }
 
@@ -133,7 +175,7 @@ function initSecretZone() {
 
   zone.addEventListener('touchstart', (e) => {
     e.preventDefault();
-    pressTimer = setTimeout(() => openPanel(), 1500);
+    pressTimer = setTimeout(() => openPanel(), LONG_PRESS_MS);
   }, { passive: false });
 
   zone.addEventListener('touchend', () => clearTimeout(pressTimer));
@@ -141,7 +183,7 @@ function initSecretZone() {
 
   /* Mouse fallback for desktop testing. */
   zone.addEventListener('mousedown', () => {
-    pressTimer = setTimeout(() => openPanel(), 1500);
+    pressTimer = setTimeout(() => openPanel(), LONG_PRESS_MS);
   });
   zone.addEventListener('mouseup', () => clearTimeout(pressTimer));
   zone.addEventListener('mouseleave', () => clearTimeout(pressTimer));
@@ -171,7 +213,7 @@ function initSecretZone() {
     panel.classList.add('hidden');
   });
 
-  /* Close panel by tapping outside of it. */
+  /* Close the panel by tapping outside of it. */
   panel.addEventListener('click', (e) => {
     if (e.target === panel) {
       panel.classList.add('hidden');
@@ -183,6 +225,12 @@ function initSecretZone() {
  *  INITIALIZATION
  * =============================================================== */
 
+/**
+ * Wire up the secret tap and long-press handlers.
+ * @param {object} [callbacks] - Optional callback hooks.
+ * @param {(volume: number) => void} [callbacks.onVolumeChange] -
+ *   Invoked whenever the volume slider is dragged.
+ */
 function init(callbacks = {}) {
   onVolumeChange = callbacks.onVolumeChange || null;
 

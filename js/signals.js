@@ -12,6 +12,12 @@
  * Licence: ISC
  */
 
+import {
+  INTENSITY_ALERT,
+  INTENSITY_WARNING,
+  INTENSITY_IDLE_FLOOR
+} from './constants.js';
+
 /* ===============================================================
  *  DATA
  * =============================================================== */
@@ -49,12 +55,42 @@ const LOG_DETECTING = [
   'CRITICAL - Multiple BLE peripherals in proximity'
 ];
 
+/** Bar percentage above which the bar turns red. */
+const BAR_CRITICAL_PCT = 70;
+
+/** Bar percentage above which the bar turns amber. */
+const BAR_WARNING_PCT = 40;
+
+/** Maximum number of log lines kept in the DOM at the same time. */
+const MAX_LOG_LINES = 100;
+
+/** Throttle period between two frequency readout updates, in milliseconds. */
+const FREQ_REFRESH_MS = 150;
+
+/** Throttle period between two device-count updates, in milliseconds. */
+const DEVICE_REFRESH_MS = 2000;
+
+/** Log update period when intensity is at the idle floor, in milliseconds. */
+const LOG_IDLE_PERIOD_MS = 4000;
+
+/** Minimum log update period at maximum intensity, in milliseconds. */
+const LOG_MIN_PERIOD_MS = 400;
+
+/** Reference log update period at zero intensity, in milliseconds. */
+const LOG_BASE_PERIOD_MS = 3000;
+
 /* ===============================================================
  *  DOM REFERENCES
  * =============================================================== */
 
-let logEl, freqEl, peakPowerEl, deviceCountEl;
-let radarStatus, logSection, statusLed, statusText;
+let logEl;
+let freqEl;
+let peakPowerEl;
+let deviceCountEl;
+let radarStatus;
+let logSection;
+let statusLed;
+let statusText;
 let footerTimeEl;
 
 let lastLogTime = 0;
@@ -62,6 +98,7 @@ let lastFreqTime = 0;
 let deviceCount = 0;
 let lastDeviceUpdate = 0;
 
+/** Bind every DOM element this module updates each frame. */
 function init() {
   logEl = document.getElementById('log-output');
   freqEl = document.getElementById('freq-value');
@@ -79,8 +116,8 @@ function init() {
  * =============================================================== */
 
 function getTimestamp() {
-  const d = new Date();
-  return pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
+  const now = new Date();
+  return pad(now.getHours()) + ':' + pad(now.getMinutes()) + ':' + pad(now.getSeconds());
 }
 
 function pad(n) {
@@ -91,12 +128,29 @@ function pickRandom(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
+/**
+ * Reset the element class to baseClass and add 'critical' or 'warning'
+ * based on the current intensity thresholds.
+ *
+ * @param {HTMLElement} el        - Element whose className is rewritten.
+ * @param {string}      baseClass - Class names always applied (space-separated).
+ * @param {number}      intensity - Detection level from 0.0 to 1.0.
+ */
+function applyIntensityClass(el, baseClass, intensity) {
+  el.className = baseClass;
+  if (intensity > INTENSITY_ALERT) {
+    el.classList.add('critical');
+  } else if (intensity > INTENSITY_WARNING) {
+    el.classList.add('warning');
+  }
+}
+
 function addLog(msg, cls) {
   const line = document.createElement('div');
   line.className = 'log-line ' + (cls || 'info');
   line.textContent = '[' + getTimestamp() + '] ' + msg;
   logEl.appendChild(line);
-  while (logEl.children.length > 100) {
+  while (logEl.children.length > MAX_LOG_LINES) {
     logEl.removeChild(logEl.firstChild);
   }
   logEl.scrollTop = logEl.scrollHeight;
@@ -124,10 +178,10 @@ function updateBars(intensity) {
 
     bar.className = 'bar-fill';
     dbm.className = 'dbm-value';
-    if (pct > 70) {
+    if (pct > BAR_CRITICAL_PCT) {
       bar.classList.add('critical');
       dbm.classList.add('critical');
-    } else if (pct > 40) {
+    } else if (pct > BAR_WARNING_PCT) {
       bar.classList.add('warning');
       dbm.classList.add('warning');
     }
@@ -135,12 +189,12 @@ function updateBars(intensity) {
 }
 
 function updateFrequency(intensity, timestamp) {
-  if (timestamp - lastFreqTime < 150) {
+  if (timestamp - lastFreqTime < FREQ_REFRESH_MS) {
     return;
   }
   lastFreqTime = timestamp;
 
-  if (intensity < 0.1) {
+  if (intensity < INTENSITY_IDLE_FLOOR) {
     freqEl.textContent = '---';
     freqEl.className = 'readout-value';
     peakPowerEl.textContent = '--- dBm';
@@ -162,50 +216,40 @@ function updateFrequency(intensity, timestamp) {
   );
   peakPowerEl.textContent = Math.min(-8, Math.max(-100, peakDbm)) + ' dBm';
 
-  freqEl.className = 'readout-value';
-  peakPowerEl.className = 'readout-value';
-  if (intensity > 0.7) {
-    freqEl.classList.add('critical');
-    peakPowerEl.classList.add('critical');
-  } else if (intensity > 0.3) {
-    freqEl.classList.add('warning');
-    peakPowerEl.classList.add('warning');
-  }
+  applyIntensityClass(freqEl, 'readout-value', intensity);
+  applyIntensityClass(peakPowerEl, 'readout-value', intensity);
 }
 
 function updateDeviceCount(intensity, timestamp) {
-  if (timestamp - lastDeviceUpdate < 2000) {
+  if (timestamp - lastDeviceUpdate < DEVICE_REFRESH_MS) {
     return;
   }
   lastDeviceUpdate = timestamp;
 
-  if (intensity < 0.1) {
+  if (intensity < INTENSITY_IDLE_FLOOR) {
     deviceCount = 0;
   } else if (intensity < 0.4) {
     deviceCount = Math.floor(Math.random() * 2) + 1;
-  } else if (intensity < 0.7) {
+  } else if (intensity < INTENSITY_ALERT) {
     deviceCount = Math.floor(Math.random() * 3) + 2;
   } else {
     deviceCount = Math.floor(Math.random() * 5) + 4;
   }
 
   deviceCountEl.textContent = deviceCount;
-  deviceCountEl.className = 'readout-value readout-count';
-  if (intensity > 0.7) {
-    deviceCountEl.classList.add('critical');
-  } else if (intensity > 0.3) {
-    deviceCountEl.classList.add('warning');
-  }
+  applyIntensityClass(deviceCountEl, 'readout-value readout-count', intensity);
 }
 
 function updateLog(intensity, timestamp) {
-  const logRate = intensity < 0.1 ? 4000 : Math.max(400, 3000 * (1 - intensity));
+  const logRate = intensity < INTENSITY_IDLE_FLOOR
+    ? LOG_IDLE_PERIOD_MS
+    : Math.max(LOG_MIN_PERIOD_MS, LOG_BASE_PERIOD_MS * (1 - intensity));
   if (timestamp - lastLogTime < logRate) {
     return;
   }
   lastLogTime = timestamp;
 
-  if (intensity < 0.1) {
+  if (intensity < INTENSITY_IDLE_FLOOR) {
     addLog(pickRandom(LOG_IDLE), 'info');
     return;
   }
@@ -220,14 +264,14 @@ function updateLog(intensity, timestamp) {
 }
 
 function updateStatus(intensity) {
-  if (intensity > 0.7) {
+  if (intensity > INTENSITY_ALERT) {
     radarStatus.textContent = 'SIGNAL DETECTED';
     radarStatus.className = 'radar-status alert';
     logSection.classList.add('alert-border');
     statusLed.className = 'status-led critical';
     statusText.textContent = 'RF ALERT';
     statusText.className = 'status-text critical';
-  } else if (intensity > 0.2) {
+  } else if (intensity > INTENSITY_WARNING) {
     radarStatus.textContent = 'ANALYZING';
     radarStatus.className = 'radar-status analyzing';
     logSection.classList.remove('alert-border');
@@ -248,6 +292,12 @@ function updateStatus(intensity) {
  *  PUBLIC API
  * =============================================================== */
 
+/**
+ * Refresh every signal display for the current frame.
+ *
+ * @param {number} intensity - Detection level from 0.0 to 1.0.
+ * @param {number} timestamp - Current requestAnimationFrame timestamp.
+ */
 function update(intensity, timestamp) {
   updateBars(intensity);
   updateFrequency(intensity, timestamp);
