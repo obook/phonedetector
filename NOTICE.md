@@ -1,4 +1,4 @@
-# SENTINEL RF-7200 -- notes techniques
+# SENTINEL RF-7200 : notes techniques
 
 Document interne, destiné à l'auteur et aux développeurs. Il n'est pas publié
 sur le site : l'outil de publication n'envoie que `README.md`, qui sert de
