@@ -9,3 +9,6 @@ android/build/
 # Location and passwords of the release key, never versioned.
 # Regenerate with make-properties.sh, kept next to the key.
 /android/keystore.properties
+
+# APK horodatés produits localement par l'outil de publication.
+release/
