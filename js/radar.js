@@ -103,6 +103,7 @@ function draw(intensity, timestamp) {
   drawDistanceLabels(cx, cy, radius);
 }
 
+/* Draw the fixed background: concentric rings and cross hairs. */
 function drawGrid(cx, cy, radius) {
   /* Concentric rings. */
   ctxR.lineWidth = 0.5;
@@ -176,6 +177,10 @@ function drawSweep(cx, cy, radius, intensity) {
   ctxR.stroke();
 }
 
+/*
+ * Spawn new blips at random positions, at a rate driven by the
+ * detection intensity, and drop the oldest ones past MAX_BLIPS.
+ */
 function updateBlips(cx, cy, radius, intensity, timestamp) {
   const blipRate = intensity > INTENSITY_IDLE_FLOOR ? 250 / intensity : 6000;
   if (timestamp - lastBlipTime > blipRate && intensity > 0.03) {
@@ -194,6 +199,7 @@ function updateBlips(cx, cy, radius, intensity, timestamp) {
   }
 }
 
+/* Draw every live blip and fade it out, oldest first. */
 function drawBlips(intensity) {
   const isAlert = intensity > INTENSITY_ALERT;
   for (let i = blips.length - 1; i >= 0; i--) {
@@ -226,6 +232,7 @@ function drawBlips(intensity) {
   ctxR.shadowBlur = 0;
 }
 
+/* Draw the glowing dot at the centre of the radar. */
 function drawCenter(cx, cy) {
   ctxR.fillStyle = COLOR_CENTER;
   ctxR.shadowColor = COLOR_CENTER;
@@ -236,6 +243,7 @@ function drawCenter(cx, cy) {
   ctxR.shadowBlur = 0;
 }
 
+/* Draw the outer circle, which turns red above the alert level. */
 function drawRim(cx, cy, radius, intensity) {
   ctxR.strokeStyle = intensity > INTENSITY_ALERT ? COLOR_RIM_ALT : COLOR_RIM;
   ctxR.lineWidth = 1.5;
@@ -244,6 +252,7 @@ function drawRim(cx, cy, radius, intensity) {
   ctxR.stroke();
 }
 
+/* Label the rings with fake distances, for the instrument look. */
 function drawDistanceLabels(cx, cy, radius) {
   ctxR.font = '8px IBM Plex Mono, monospace';
   ctxR.fillStyle = 'rgba(90, 106, 128, 0.5)';

@@ -115,6 +115,7 @@ function init() {
  *  HELPERS
  * =============================================================== */
 
+/* Current time as HH:MM:SS, for the event log. */
 function getTimestamp() {
   const now = new Date();
   return pad(now.getHours()) + ':' + pad(now.getMinutes()) + ':' + pad(now.getSeconds());

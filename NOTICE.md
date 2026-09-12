@@ -1,52 +1,99 @@
-# Notice d'utilisation - SENTINEL RF-7200
+# SENTINEL RF-7200 -- notes techniques
 
-Cette application fait semblant de détecter les téléphones, montres connectées et écouteurs sans fil autour de vous. Elle imite un vrai appareil de détection : balayage radar, bips façon compteur Geiger, barres de signal, journal d'événements qui défile.
+Document interne, destiné à l'auteur et aux développeurs. Il n'est pas publié
+sur le site : l'outil de publication n'envoie que `README.md`, qui sert de
+notice à l'utilisateur, en français puis en anglais.
 
-**L'application ne détecte rien du tout.** C'est une illusion. Vous décidez en secret, d'un simple geste, quand le détecteur s'affole. Idéale pour faire une blague à des amis ou pour intégrer un effet bluffant dans un tour de magie.
+## Développement local
 
-![](media/demo-screenshot.png)
+```bash
+npx serve .
+```
 
-## Avant de jouer
+Ouvrir l'URL dans Chrome sur le téléphone, toucher l'écran de démarrage pour
+passer en plein écran, puis "START SCAN".
 
-1. Installez l'application sur votre téléphone ou votre tablette (fichier APK fourni).
-2. Ouvrez-la une fois chez vous pour répéter et bien maîtriser les gestes secrets.
-3. Montez le volume, ou branchez une enceinte Bluetooth pour plus d'effet.
+## Compilation de l'APK
 
-## En représentation
+Node.js et Android Studio sont nécessaires.
 
-1. Lancez l'application devant votre public.
-2. Touchez l'écran de démarrage, puis appuyez sur **START SCAN**.
-3. Le radar tourne tranquillement, avec quelques bips de temps en temps : tout paraît normal.
-4. **Touchez l'écran n'importe où** pour déclencher la détection. Les bips s'accélèrent, les barres de signal montent, des alertes apparaissent.
-5. Touchez à nouveau l'écran pour faire redescendre tout doucement.
-6. Profitez de la réaction du public.
+```bash
+npm install              # une fois par poste
+npm run cap:sync         # copie les fichiers web dans www/ puis synchronise Capacitor
+npm run cap:open         # ouvre le projet dans Android Studio
+npm run build:android    # APK de debug
+```
 
-## Les gestes secrets
+Pour la release signée, celle qui est publiée :
 
-| Geste | Effet |
-|---|---|
-| Toucher l'écran (n'importe où) | Lance ou arrête la détection (le téléphone vibre) |
-| Appui long (1,5 s) en bas à droite | Ouvre le panneau caché de réglages (vitesse, volume, remise à zéro) |
-| Toucher le losange (logo) | Bascule en plein écran |
-| Toucher le haut-parleur | Coupe ou remet le son |
+```bash
+npm run cap:sync && cd android && ./gradlew assembleRelease
+```
 
-## Conseils pour un meilleur effet
+L'APK produit est `android/app/build/outputs/apk/release/phonedetector-release.apk` ;
+son nom vient de la règle `outputFileName` d'`android/app/build.gradle`.
 
-- Tenez l'appareil face au public, écran bien visible.
-- Commencez doucement, puis montez en intensité en vous déplaçant.
-- Pointez l'appareil vers une personne ou un objet précis pour amplifier le doute.
-- Gardez un visage neutre. C'est ce qui rend l'illusion crédible.
+## Pile technique
 
-## En cas de souci
+- HTML, CSS et JavaScript en modules ES, sans cadre applicatif ni étape de
+  construction.
+- Web Audio API pour les cliquetis Geiger et l'alarme, sans aucun fichier son.
+- Canvas 2D pour le balayage radar.
+- Polices embarquées localement (IBM Plex Mono, Oxanium) : tout fonctionne
+  hors ligne, sans requête réseau.
+- Capacitor pour l'empaquetage Android.
+- Wake Lock API et Fullscreen API pour la version web.
 
-- **L'écran s'éteint tout seul** : l'application empêche normalement cela. Si le problème persiste, vérifiez qu'elle est bien au premier plan.
-- **Pas de son** : touchez l'icône du haut-parleur, ou vérifiez le volume média de l'appareil.
-- **Le radar se fige** : revenez à l'écran d'accueil de votre téléphone, puis rouvrez l'application.
+## Structure
 
-## À savoir
+```
+index.html           Application d'une seule page
+css/style.css        Thème sombre, façon panneau d'instrument
+js/
+  app.js             Boucle principale, démarrage, plein écran, son
+  controls.js        Machine à états et gestes secrets
+  audio.js           Cliquetis Geiger (Web Audio API)
+  radar.js           Balayage radar sur Canvas
+  signals.js         Barres de signal, fréquences, journal
+  licence.js         Date limite d'utilisation de la version publiée
+fonts/               IBM Plex Mono et Oxanium, fichiers TTF locaux
+www/                 Copie générée des fichiers web, ne pas éditer
+android/             Projet Android Capacitor
+```
 
-- L'application fonctionne entièrement hors-ligne, sans connexion internet.
-- Elle ne collecte aucune donnée et n'envoie rien à l'extérieur.
-- Elle ne capte ni ondes radio, ni Bluetooth, ni Wi-Fi : tout est simulé.
+## Licence de démonstration
 
-Amusez-vous bien.
+`js/licence.js` porte `EXPIRATION_DATE` : `null` pour une version sans date
+limite, sinon un objet `Date`. Passé cette date, le bouton de démarrage se
+désactive et affiche "DEMO EXPIRED".
+
+L'outil de publication réécrit cette ligne, comme il réécrit `Licence.kt`
+dans les applications Kotlin du catalogue. Elle doit donc rester sur une
+seule ligne, de la forme `export const EXPIRATION_DATE = ...;`.
+
+## Signature de release
+
+La clé vit hors du dépôt, dans `00-clés/GitHub-phonedetector/`, avec le
+script qui régénère `android/keystore.properties`. Ce fichier n'est pas
+versionné ; sans lui, la release n'est pas signée. La clé ne doit plus
+changer une fois une version diffusée : une application signée autrement ne
+peut pas se mettre à jour par-dessus celle déjà installée.
+
+## Publication
+
+Par l'outil `compilator` du dépôt MagicPages, qui inscrit la date dans
+`js/licence.js`, compile la release, envoie l'APK, le `README.md` complété
+et `media/icon.png`, retire la version précédente, puis restaure le dépôt :
+
+```bash
+bash compilator/publier.sh 0/0/0 phonedetector
+```
+
+`0/0/0` publie une version sans date limite.
+
+## Pièges connus
+
+- `npm run sync-www` copiait un dossier `assets/` absent du dépôt, ce qui
+  faisait échouer toute compilation. Corrigé.
+- `www/` est généré : éditer les fichiers de la racine, jamais leur copie.
+  De même pour `android/app/src/main/assets/public`, produit par `cap sync`.

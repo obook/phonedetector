@@ -134,6 +134,7 @@ function update(dt) {
  *  VIBRATE HELPER
  * =============================================================== */
 
+/* Vibrate briefly, on the devices that support it. */
 function vibrate() {
   if (navigator.vibrate) {
     navigator.vibrate(VIBRATE_MS);
@@ -144,6 +145,7 @@ function vibrate() {
  *  TAP TO TOGGLE DETECTION
  * =============================================================== */
 
+/* Listen for taps on the screen, the operator's main secret control. */
 function initScreenTap() {
   document.addEventListener('click', (e) => {
     /* Ignore taps on interactive UI elements. */
@@ -163,6 +165,7 @@ function initScreenTap() {
  *  LONG PRESS - HIDDEN CALIBRATION PANEL
  * =============================================================== */
 
+/* Wire the hidden calibration panel: long press, sliders, reset. */
 function initSecretZone() {
   const zone = document.getElementById('secret-zone');
   const panel = document.getElementById('secret-panel');

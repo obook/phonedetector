@@ -8,104 +8,130 @@
 ![HTML5](https://img.shields.io/badge/HTML5-Canvas%20%2B%20Web%20Audio-E34F26?logo=html5&logoColor=white)
 ![Offline](https://img.shields.io/badge/network-fully%20offline-9cf)
 
-A fake but convincing RF signal detector web app designed as a classroom prank. It simulates a professional-grade TSCM (Technical Surveillance Counter-Measures) device that pretends to detect phones, smartwatches, wireless earbuds, and other connected devices nearby.
+Faux détecteur de signaux radio, assez convaincant pour servir de farce en classe. L'application imite un appareil professionnel de contre-surveillance et fait mine de repérer les téléphones, montres connectées, écouteurs sans fil et autres appareils alentour.
 
-![Demo screenshot showing radar sweep, signal bars, and event log](/media/demo-screenshot.png)
+Tout y est pour que l'illusion tienne : cliquetis de compteur Geiger, balayage radar, barres de signal, journal d'événements qui défile. Les élèves croient leurs appareils détectés et se précipitent pour les éteindre.
 
-Built to look and sound like real equipment - Geiger counter clicks, radar sweep, signal bars, scrolling event log - so students genuinely believe their devices are being scanned and rush to turn them off.
+**L'application ne détecte rien du tout.** C'est l'enseignant qui commande les résultats, discrètement.
 
-**This app does not actually detect anything.** The teacher secretly controls the results.
+## Déroulement
+
+1. Ouvrez l'application sur un téléphone ou une tablette, écran tourné vers la classe.
+2. La séquence de démarrage se joue toute seule, à la manière d'un vrai micrologiciel.
+3. Touchez l'écran de démarrage pour passer en plein écran, puis appuyez sur "START SCAN".
+4. Au repos, le radar balaie tranquillement, avec quelques cliquetis de fond.
+5. **Touchez l'écran n'importe où** pour déclencher la détection, confirmée par une vibration.
+6. Les barres montent, les cliquetis s'accélèrent, les messages d'alerte remplissent le journal.
+7. Touchez de nouveau pour redescendre.
+8. Regardez les téléphones s'éteindre.
+
+## Commandes secrètes
+
+| Geste | Effet |
+|---|---|
+| Toucher l'écran, n'importe où | Déclenche ou arrête la détection (retour par vibration) |
+| Appui long de 1,5 s dans le coin bas droit | Ouvre le panneau de réglage caché : vitesse, volume, remise à zéro |
+| Toucher le logo en losange | Bascule le plein écran |
+| Toucher l'icône de haut-parleur | Coupe ou rétablit le son |
+
+## Conseils
+
+- Une enceinte Bluetooth donne des cliquetis qui emplissent la salle.
+- Tenez l'écran vers la classe : le radar et les barres font la moitié du travail.
+- Commencez par un balayage calme, puis montez en intensité en circulant entre les tables.
+- Pointez le sac d'un élève en particulier pour l'effet.
+- Gardez votre sérieux.
+
+## Particularités de la version Android
+
+La version native ajoute ce que le navigateur ne sait pas faire :
+
+- **plein écran immersif** : barre d'état et barre de navigation masquées au lancement, révélées par un balayage depuis un bord ;
+- **écran toujours allumé** : l'affichage ne s'atténue ni ne se verrouille tant que l'application est au premier plan ;
+- **passage de l'écran de verrouillage** : l'application s'affiche par-dessus et écarte le verrou.
+
+## En cas de problème
+
+- **L'écran s'éteint tout seul** : l'application l'empêche normalement ; vérifiez qu'elle est bien au premier plan.
+- **Pas de son** : touchez l'icône de haut-parleur, ou montez le volume média de l'appareil.
+- **Le radar se fige** : revenez à l'écran d'accueil du téléphone, puis rouvrez l'application.
+
+## À savoir
+
+- L'application fonctionne entièrement hors ligne, sans connexion.
+- Elle ne collecte aucune donnée et n'envoie rien à l'extérieur.
+- Elle ne capte ni ondes radio, ni Bluetooth, ni Wi-Fi : tout est simulé.
+
+## Licence
+
+Publié sous [licence MIT](LICENSE).
+
+### Licences des composants
+
+| Composant | Licence | Auteur |
+|---|---|---|
+| [IBM Plex Mono](https://github.com/IBM/plex) | [SIL Open Font License 1.1](https://scripts.sil.org/OFL) | IBM Corp. |
+| [Oxanium](https://github.com/sevmeyer/oxanium) | [SIL Open Font License 1.1](https://scripts.sil.org/OFL) | Severin Meyer |
+| [Capacitor](https://capacitorjs.com/) | MIT | Ionic Team |
+
+---
+
+# English
+
+A fake but convincing RF signal detector, designed as a classroom prank. It simulates a professional TSCM device and pretends to detect phones, smartwatches, wireless earbuds and other connected devices nearby.
+
+Everything is there to sell the illusion: Geiger counter clicks, radar sweep, signal bars, and a scrolling event log. Students believe their devices are being scanned and rush to turn them off.
+
+**The app does not detect anything.** The teacher secretly controls the results.
 
 ## How it works
 
-1. Open the app on your phone or tablet, facing the class.
+1. Open the app on a phone or tablet, facing the class.
 2. The boot sequence plays automatically, looking like real firmware initialization.
-3. Tap anywhere on the boot screen to enter fullscreen, then tap "START SCAN."
+3. Tap anywhere on the boot screen to enter fullscreen, then tap "START SCAN".
 4. In idle mode, the radar sweeps quietly with occasional background clicks.
-5. **Tap anywhere on the screen** to toggle detection (with haptic vibration).
+5. **Tap anywhere on the screen** to toggle detection, with haptic feedback.
 6. Signal bars rise, Geiger clicks accelerate, alert messages flood the log.
 7. Tap again to ramp back down.
-8. Watch students scramble to turn off their phones.
+8. Watch the phones go dark.
 
 ## Secret controls
 
 | Action | Effect |
 |---|---|
-| Tap anywhere on screen | Toggle detection on/off (vibration feedback) |
-| Long press bottom-right corner (1.5 s) | Open hidden calibration panel (speed, volume, reset) |
-| Tap the logo icon (diamond shape) | Toggle fullscreen |
-| Tap the speaker icon | Toggle sound on/off |
+| Tap anywhere on screen | Toggle detection on and off (vibration feedback) |
+| Long press bottom-right corner, 1.5 s | Open the hidden calibration panel: speed, volume, reset |
+| Tap the diamond logo | Toggle fullscreen |
+| Tap the speaker icon | Toggle sound |
 
-## Running locally
+## Tips
 
-```bash
-npx serve .
-```
-
-Open the URL in Chrome on your phone. Tap anywhere on the boot screen to go fullscreen, then tap "START SCAN."
-
-## Building the Android APK
-
-Requires Node.js and Android Studio.
-
-```bash
-npm install
-npm run cap:sync
-npm run cap:open        # opens Android Studio
-npm run build:android   # builds debug APK directly
-```
-
-The APK is output at `android/app/build/outputs/apk/debug/app-debug.apk`. Transfer it to your device and install.
+- A Bluetooth speaker gives Geiger clicks that fill the room.
+- Hold the screen toward the class: the radar and the bars do half the work.
+- Start with a calm scan, then ramp up while walking between desks.
+- Point at one student's bag for dramatic effect.
+- Keep a straight face.
 
 ## Android-specific features
 
-The native Android build includes behaviors that the web version cannot provide:
+The native build adds what the browser cannot provide:
 
-- **Immersive fullscreen**: status bar and navigation bar are hidden at launch. Swipe from an edge to reveal them temporarily.
-- **Screen always on**: the display never dims or locks while the app is in the foreground.
-- **Lock screen bypass**: the app shows above the lock screen and dismisses the keyguard automatically.
+- **immersive fullscreen**: status and navigation bars hidden at launch, revealed by an edge swipe;
+- **screen always on**: the display never dims or locks while the app is in the foreground;
+- **lock screen bypass**: the app shows above the lock screen and dismisses the keyguard.
 
-## Tech stack
+## Troubleshooting
 
-- Vanilla HTML, CSS, JavaScript (ES modules) - no framework, no build step
-- Web Audio API for Geiger counter clicks and alarm tones (no audio files)
-- Canvas 2D for the radar sweep animation
-- All fonts bundled locally (IBM Plex Mono, Oxanium) - works fully offline
-- Capacitor for Android APK packaging
-- Wake Lock API to prevent screen sleep (web)
-- Fullscreen API for immersive display (web)
+- **The screen turns off**: the app normally prevents this; make sure it is in the foreground.
+- **No sound**: tap the speaker icon, or raise the media volume of the device.
+- **The radar freezes**: go back to the home screen, then reopen the app.
 
-## Project structure
+## Good to know
 
-```
-index.html           Single-page app
-css/style.css        Dark instrument-panel theme
-js/
-  app.js             Main loop, boot sequence, fullscreen, sound toggle
-  controls.js        State machine + secret trigger handlers
-  audio.js           Geiger click engine (Web Audio API)
-  radar.js           Canvas radar sweep with blips
-  signals.js         Signal bars, frequency readout, event log
-fonts/               IBM Plex Mono + Oxanium (local TTF files)
-android/             Capacitor Android project
-```
-
-## Tips for maximum effect
-
-- Use a Bluetooth speaker for louder Geiger clicks that fill the room.
-- Hold the phone screen toward the class so they can see the radar and signal bars.
-- Start with a calm scan, then slowly ramp up while walking between desks.
-- Point toward a specific student's bag for dramatic effect.
-- Keep a straight face.
+- The app runs fully offline, with no connection at all.
+- It collects no data and sends nothing anywhere.
+- It picks up no radio, Bluetooth or Wi-Fi signal: everything is simulated.
 
 ## License
 
-This project is licensed under the [MIT License](LICENSE).
-
-### Third-party licenses
-
-| Component | License | Author |
-|---|---|---|
-| [IBM Plex Mono](https://github.com/IBM/plex) | [SIL Open Font License 1.1](https://scripts.sil.org/OFL) | IBM Corp. |
-| [Oxanium](https://github.com/sevmeyer/oxanium) | [SIL Open Font License 1.1](https://scripts.sil.org/OFL) | Severin Meyer |
-| [Capacitor](https://capacitorjs.com/) | MIT | Ionic Team |
+Released under the [MIT License](LICENSE). Third-party licenses are listed in the French section above.
