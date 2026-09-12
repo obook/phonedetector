@@ -5,3 +5,7 @@ android/.gradle/
 android/build/
 .idea/
 *.iml
+
+# Location and passwords of the release key, never versioned.
+# Regenerate with make-properties.sh, kept next to the key.
+/android/keystore.properties

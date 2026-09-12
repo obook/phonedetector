@@ -15,6 +15,7 @@ import controls from './controls.js';
 import audio from './audio.js';
 import radar from './radar.js';
 import signals from './signals.js';
+import { isExpired } from './licence.js';
 
 let lastTime = 0;
 let running = false;
@@ -76,6 +77,14 @@ function initOverlay() {
     if (started) {
       return;
     }
+
+    /* A build past its expiry date refuses to start. */
+    if (isExpired()) {
+      btn.disabled = true;
+      btn.textContent = 'DEMO EXPIRED';
+      return;
+    }
+
     started = true;
 
     /* Ensure fullscreen if the button is the first interaction. */

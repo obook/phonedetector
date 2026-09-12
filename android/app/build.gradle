@@ -1,5 +1,18 @@
 apply plugin: 'com.android.application'
 
+/*
+ * keystore.properties holds the location and passwords of the release key.
+ * It is not versioned: generate it with make-properties.sh, kept next to the
+ * key itself. Without it the release build stays unsigned, so CI and other
+ * machines keep working.
+ */
+def keystorePropsFile = rootProject.file('keystore.properties')
+def keystoreProps = new Properties()
+if (keystorePropsFile.exists()) {
+    /* Read as UTF-8: the default ISO-8859-1 would mangle the accented path. */
+    keystorePropsFile.withReader('UTF-8') { keystoreProps.load(it) }
+}
+
 android {
     namespace "com.teacher.rfdetector"
     compileSdk rootProject.ext.compileSdkVersion
@@ -16,10 +29,23 @@ android {
             ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+    signingConfigs {
+        if (keystorePropsFile.exists()) {
+            release {
+                storeFile file(keystoreProps['storeFile'])
+                storePassword keystoreProps['storePassword']
+                keyAlias keystoreProps['keyAlias']
+                keyPassword keystoreProps['keyPassword']
+            }
+        }
+    }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            if (keystorePropsFile.exists()) {
+                signingConfig signingConfigs.release
+            }
         }
     }
     applicationVariants.all { variant ->
